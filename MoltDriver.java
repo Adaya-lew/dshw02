@@ -9,8 +9,8 @@ public class MoltDriver implements Comparable<MoltDriver>{
         this.nextAvailableTimeForDelivery = nextAvailableTimeForDelivery;
     }
 
-    public void incrementTotalOrdersDelivered (){
-        this.nextAvailableTimeForDelivery++;
+    public void incrementTotalOrdersDelivered() {
+        this.totalOrdersDelivered++;
     }
 
     public int getNextAvailableTimeForDelivery () {
