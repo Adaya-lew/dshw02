@@ -2,11 +2,16 @@ public class MoltDriver implements Comparable<MoltDriver>{
     private int id;
     private String name;
     private int nextAvailableTimeForDelivery;
+    private int totalOrdersDelivered;
 
     public MoltDriver ( int id , String name , int nextAvailableTimeForDelivery ) {
+        if (nextAvailableTimeForDelivery < 0) {
+            throw new IllegalArgumentException("Next available time must be non-negative.");
+        }
         this.id = id;
         this.name = name;
         this.nextAvailableTimeForDelivery = nextAvailableTimeForDelivery;
+        this.totalOrdersDelivered = 0;
     }
 
     public void incrementTotalOrdersDelivered() {
@@ -17,14 +22,6 @@ public class MoltDriver implements Comparable<MoltDriver>{
         return this.nextAvailableTimeForDelivery;
     }
 
-    public MoltDriver(int id, String name, int nextAvailableTimeForDelivery) {
-        if (nextAvailableTimeForDelivery < 0) {
-            throw new IllegalArgumentException("Next available time must be non-negative.");
-        }
-        this.id = id;
-        this.name = name;
-        this.nextAvailableTimeForDelivery = nextAvailableTimeForDelivery;
-    }
     public void setNextAvailableTimeForDelivery(int time) {
         if (time > 0) {
             this.nextAvailableTimeForDelivery = time;
@@ -42,7 +39,7 @@ public class MoltDriver implements Comparable<MoltDriver>{
                "id=" + id +
                ", name='" + name + '\'' +
                ", nextAvailableTimeForDelivery=" + nextAvailableTimeForDelivery +
-               '}';
+               ", totalOrdersDelivered=" + totalOrdersDelivered +"}";
     }
 
     public int compareTo ( MoltDriver otherDriver ) {

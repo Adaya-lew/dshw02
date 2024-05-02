@@ -1,19 +1,22 @@
 import java.lang.reflect.Array;
 import java.util.NoSuchElementException;
-
 public class GeneralPurposeHeap<T extends Comparable<T>> {
     private T[] heap;
     private int currentElementsAmount = 0;
 
-    public GeneralPurposeHeap(Class<T> type, int capacity) {
-        heap = (T[]) Array.newInstance(type, capacity);
+    public GeneralPurposeHeap() {
+        heap = (T[]) new Comparable[10];
+    }
+
+    public GeneralPurposeHeap(int capacity) {
+        heap = (T[]) new Comparable[capacity];
     }
 
     public GeneralPurposeHeap(T[] initialData) {
-        heap = (T[]) Array.newInstance(initialData.getClass().getComponentType(), initialData.length * 2);
-        System.arraycopy(initialData, 0, heap, 0, initialData.length);
+        heap = (T[]) new Comparable[initialData.length+1];
+        System.arraycopy(initialData, 0, heap, 1, initialData.length);
         currentElementsAmount = initialData.length;
-        for (int i = currentElementsAmount / 2 - 1; i >= 0; i--) {
+        for (int i = currentElementsAmount / 2; i >= 0; i--) {
             precDown(i);
         }
     }
@@ -23,7 +26,7 @@ public class GeneralPurposeHeap<T extends Comparable<T>> {
             resize();
         }
         heap[currentElementsAmount] = element;
-        precUp(currentElementsAmount, element);
+        precUp(currentElementsAmount);
         currentElementsAmount++;
     }
     
@@ -51,51 +54,51 @@ public class GeneralPurposeHeap<T extends Comparable<T>> {
     }
 
     public void mergeHeap(GeneralPurposeHeap<T> otherHeap) {
-        if (otherHeap == null) {
-            throw new IllegalArgumentException("The other heap must not be null.");
+        if (otherHeap.currentElementsAmount == 0) {
+            return;
         }
-        for (int i = 0; i < otherHeap.currentElementsAmount; i++) {
-            this.insert(otherHeap.heap[i]);
+
+        if (currentElementsAmount + otherHeap.currentElementsAmount >= heap.length) {
+            resize();
+        }
+
+        System.arraycopy(otherHeap.heap, 1, heap, currentElementsAmount + 1, otherHeap.currentElementsAmount);
+        currentElementsAmount += otherHeap.currentElementsAmount;
+
+        for (int i = currentElementsAmount / 2; i >= 1; i--) {
+            precDown(i);
         }
     }
 
     private void precDown(int index) {
-        while (index * 2 + 1 < currentElementsAmount) { // While there are children
-            int leftChildIndex = index * 2 + 1;
-            int rightChildIndex = leftChildIndex + 1;
-            int smallestChildIndex = leftChildIndex; // Assume left child is smaller first
-
-            // Check if right child exists and is smaller
-            if (rightChildIndex < currentElementsAmount && heap[rightChildIndex].compareTo(heap[leftChildIndex]) < 0) {
-                smallestChildIndex = rightChildIndex;
+        T x = heap[index];
+        while (2 * index <= currentElementsAmount) {
+            int j = 2 * index; // Left child
+            if (j < currentElementsAmount && heap[j + 1].compareTo(heap[j]) < 0) {
+                j++; // Right child is smaller
             }
-
-            // If the current index is less than the smallest child, the heap property is violated
-            if (heap[smallestChildIndex].compareTo(heap[index]) < 0) {
-                T temp = heap[index];
-                heap[index] = heap[smallestChildIndex];
-                heap[smallestChildIndex] = temp;
-                index = smallestChildIndex; // Move to the child's index and continue
-            } else {
-                // If we didn't swap, the heap property isn't violated and we can stop percolating down
+            if (heap[j].compareTo(x) >= 0) {
                 break;
             }
+            heap[index] = heap[j];
+            index = j;
         }
+        heap[index] = x;
     }
 
     private void resize() {
-        T[] newHeap = (T[]) Array.newInstance(heap.getClass().getComponentType(), heap.length * 2);
+        T[] newHeap = (T[]) new Comparable[heap.length*2];
         System.arraycopy(heap, 0, newHeap, 0, heap.length);
         heap = newHeap;
     }
 
-    private void precUp(int index, T newValue) {
-        int parentIndex = (index - 1) / 2;
-        if (index > 0 && newValue.compareTo(heap[parentIndex]) < 0) { // For min-heap
-            heap[index] = heap[parentIndex];
-            precUp(parentIndex, newValue);  // Corrected recursive call
-        } else {
-            heap[index] = newValue;
+    private void precUp(int index) {
+        T x = heap[index];
+        while (index > 1 && heap[index / 2].compareTo(x) > 0) {
+            heap[index] = heap[index / 2];
+            index /= 2;
         }
+        heap[index] = x;
     }
 }
+

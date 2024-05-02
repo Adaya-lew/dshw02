@@ -3,8 +3,6 @@ public class MoltOrder implements Comparable<MoltOrder>{
     private int timeNeededToDeliver;
     private int priority;
     private int orderReadyTime;
-    private int timeNeededToDeliver;
-    private int priority;
     private String orderDescription;
 
     public MoltOrder ( String name , String orderDescription , int orderReadyTime , int
@@ -15,6 +13,9 @@ public class MoltOrder implements Comparable<MoltOrder>{
             this.priority = priority;
             this.orderReadyTime = orderReadyTime;
             this.orderDescription = orderDescription;
+        }
+        else {
+            thorw new IllegalArgumentException("Values must be postive.");
         }
     }
 
@@ -45,8 +46,8 @@ public class MoltOrder implements Comparable<MoltOrder>{
 
     public String toString() {
         return "MoltOrder{" +
-               "name='" + name + '\'' +
-               ", orderDescription='" + orderDescription + '\'' +
+               "name=" + name + '\'' +
+               ", orderDescription=" + orderDescription + '\'' +
                ", orderReadyTime=" + orderReadyTime +
                ", timeNeededToDeliver=" + timeNeededToDeliver +
                ", priority=" + priority +
